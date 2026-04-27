@@ -1,26 +1,21 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import FloatingWhatsAppButton from "../components/FloatingWhatsAppButton";
 
 const COPY = {
   en: {
     title: "Stripe Payment",
     subtitle: "You selected Italy. Continue to Stripe to complete your payment securely.",
     proceed: "Proceed To Stripe",
-    back: "Back To Country Selection",
   },
   it: {
     title: "Pagamento Stripe",
     subtitle: "Hai selezionato Italia. Continua su Stripe per completare il pagamento.",
     proceed: "Procedi Con Stripe",
-    back: "Torna Alla Scelta Del Paese",
   },
 };
 
 export default function StripePayment({ locale = "en" }) {
-  const navigate = useNavigate();
   const text = locale === "it" ? COPY.it : COPY.en;
-
-  const countryRoute = locale === "it" ? "/it/country-selection" : "/country-selection";
 
   const handleProceed = () => {
     window.location.href = "https://stripe.com/payments";
@@ -32,7 +27,7 @@ export default function StripePayment({ locale = "en" }) {
         <h1 className="text-3xl font-black text-emerald-300 sm:text-4xl">{text.title}</h1>
         <p className="mt-4 text-sm text-slate-200 sm:text-base">{text.subtitle}</p>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mt-8 flex justify-center">
           <button
             type="button"
             onClick={handleProceed}
@@ -40,16 +35,9 @@ export default function StripePayment({ locale = "en" }) {
           >
             {text.proceed}
           </button>
-
-          <button
-            type="button"
-            onClick={() => navigate(countryRoute)}
-            className="rounded-full border border-white/50 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/60"
-          >
-            {text.back}
-          </button>
         </div>
       </section>
+      <FloatingWhatsAppButton locale={locale} />
     </main>
   );
 }

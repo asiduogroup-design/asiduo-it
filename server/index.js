@@ -10,6 +10,7 @@ const rateLimit = require('express-rate-limit')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('./models/User')
+const QuoteRequest = require('./models/QuoteRequest')
 
 const app = express()
 const SERVICE_PRICING_INR = Object.freeze({
@@ -51,6 +52,15 @@ const allowedOrigins = CORS_ORIGINS.length > 0 ? CORS_ORIGINS : defaultAllowedOr
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const normalizeEmail = (value) => String(value || '').trim().toLowerCase()
 const normalizePassword = (value) => String(value || '')
+const normalizeContactName = (value) => String(value || '').trim().slice(0, 120)
+const normalizeContactPhone = (value) =>
+  String(value || '')
+    .trim()
+    .replace(/[^\d+\-\s()]/g, '')
+    .slice(0, 40)
+const normalizeContactCompany = (value) => String(value || '').trim().slice(0, 120)
+const normalizeContactMessage = (value) => String(value || '').trim().slice(0, 1200)
+const normalizeLocale = (value) => (String(value || '').trim().toLowerCase() === 'it' ? 'it' : 'en')
 const normalizeServiceName = (value) => String(value || 'General Service').trim().slice(0, 60)
 const normalizeServiceKey = (value) => {
   const cleaned = String(value || 'general_service')
@@ -64,6 +74,7 @@ const normalizeServiceKey = (value) => {
 }
 const isPositiveNumber = (value) => Number.isFinite(value) && value > 0
 const hasRazorpayCredentials = () => Boolean(RAZORPAY_KEY_ID && RAZORPAY_KEY_SECRET)
+const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || ''))
 const formatRazorpayError = (error, fallbackMessage) => {
   const messageFromApi = error.response?.data?.error?.description
   return String(messageFromApi || fallbackMessage)
@@ -223,6 +234,54 @@ app.post('/api/login', async (req, res) => {
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Server error' })
+  }
+})
+
+/* ================= QUOTATIONS ================= */
+
+app.post('/api/quotations', async (req, res) => {
+  try {
+    const serviceId = String(req.body?.serviceId || '').trim().slice(0, 80)
+    const serviceName = normalizeServiceName(req.body?.serviceName)
+    const serviceCategory = String(req.body?.serviceCategory || '').trim().slice(0, 40)
+    const estimatedQuote = String(req.body?.estimatedQuote || '').trim().slice(0, 80)
+    const name = normalizeContactName(req.body?.name)
+    const phone = normalizeContactPhone(req.body?.phone)
+    const email = normalizeEmail(req.body?.email)
+    const company = normalizeContactCompany(req.body?.company)
+    const message = normalizeContactMessage(req.body?.message)
+    const locale = normalizeLocale(req.body?.locale)
+
+    if (!serviceName || !name || !phone || !email) {
+      return res.status(400).json({ error: 'Service, name, phone, and email are required.' })
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email address.' })
+    }
+
+    const quoteRequest = new QuoteRequest({
+      serviceId,
+      serviceName,
+      serviceCategory,
+      estimatedQuote,
+      name,
+      phone,
+      email,
+      company,
+      message,
+      locale,
+    })
+
+    await quoteRequest.save()
+
+    res.status(201).json({
+      message: 'Quotation request submitted successfully.',
+      requestId: quoteRequest._id,
+    })
+  } catch (error) {
+    console.error('Quotation request failed:', error)
+    res.status(500).json({ error: 'Unable to submit quotation request right now.' })
   }
 })
 

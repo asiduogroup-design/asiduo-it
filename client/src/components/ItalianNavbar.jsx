@@ -35,15 +35,20 @@ const Topbar = ({ isOverlayRoute }) => (
   </div>
 );
 
-const ItalianNavbar = () => {
+const ItalianNavbar = ({ lang = "it", onLanguageChange }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactNavHasBackground, setContactNavHasBackground] = useState(false);
+  const [servicesNavHidden, setServicesNavHidden] = useState(false);
   const lastScrollYRef = useRef(0);
+  const servicesLastScrollYRef = useRef(0);
   const navigate = useNavigate();
   const location = useLocation();
   const isHomeOverlayRoute = location.pathname === "/it";
   const isContactOverlayRoute = location.pathname === "/it/contact";
+  const isServicesRoute = location.pathname === "/it/services" || location.pathname === "/services";
   const isOverlayRoute = location.pathname === "/it" || isContactOverlayRoute;
+  const shouldUseFixedNav = isOverlayRoute || isServicesRoute;
+  const showTopbar = !isServicesRoute;
 
   const token = localStorage.getItem("token");
 
@@ -94,9 +99,47 @@ const ItalianNavbar = () => {
     };
   }, [isContactOverlayRoute]);
 
+  useEffect(() => {
+    if (!isServicesRoute) {
+      setServicesNavHidden(false);
+      return undefined;
+    }
+
+    const handleScroll = () => {
+      const currentY = window.scrollY || 0;
+      const delta = currentY - servicesLastScrollYRef.current;
+
+      if (currentY < 28) {
+        setServicesNavHidden(false);
+      } else if (delta > 8) {
+        setServicesNavHidden(true);
+        setMenuOpen(false);
+      } else if (delta < -8) {
+        setServicesNavHidden(false);
+      }
+
+      servicesLastScrollYRef.current = currentY;
+    };
+
+    servicesLastScrollYRef.current = window.scrollY || 0;
+    setServicesNavHidden(false);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isServicesRoute]);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/it/login");
+  };
+
+  const handleLanguageSwitch = () => {
+    const nextLang = lang === "it" ? "en" : "it";
+    if (typeof onLanguageChange === "function") {
+      onLanguageChange(nextLang);
+    }
   };
 
   const desktopLinkClass = isHomeOverlayRoute
@@ -112,8 +155,16 @@ const ItalianNavbar = () => {
       : "border-b border-violet-100 bg-white/95 shadow-sm backdrop-blur-md";
 
   return (
-    <div className={isOverlayRoute ? "fixed inset-x-0 top-0 z-[80]" : "relative z-40"}>
-      <Topbar isOverlayRoute={isOverlayRoute} />
+    <div
+      className={
+        shouldUseFixedNav
+          ? `fixed inset-x-0 top-0 z-[90] transition-transform duration-300 ${
+              isServicesRoute && servicesNavHidden ? "-translate-y-full" : "translate-y-0"
+            }`
+          : "relative z-40"
+      }
+    >
+      {showTopbar && <Topbar isOverlayRoute={isOverlayRoute} />}
 
       <nav
         className={`safe-mobile-padding relative flex w-full items-center justify-between overflow-visible py-1.5 sm:px-4 sm:py-2 md:px-8 ${navBackgroundClass}`}
@@ -132,6 +183,12 @@ const ItalianNavbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex flex-1 justify-center space-x-4 lg:space-x-6">
+          <Link
+            to="/it/services"
+            className={`${desktopLinkClass} rounded-md px-3 py-1.5 text-sm font-bold tracking-[0.02em] transition-colors duration-200 lg:text-[15px]`}
+          >
+            Servizi
+          </Link>
 
           <Link
             to="/it/software-solutions"
@@ -152,6 +209,18 @@ const ItalianNavbar = () => {
 
         {/* Login / Logout */}
         <div className="ml-3 flex items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={handleLanguageSwitch}
+            className={`rounded-md px-2.5 py-1.5 text-xs font-bold tracking-[0.08em] transition-colors sm:text-sm ${
+              isHomeOverlayRoute
+                ? "border border-white/40 bg-white/10 text-white hover:bg-white/20"
+                : "border border-violet-200 bg-white text-violet-900 hover:bg-violet-50"
+            }`}
+            title={lang === "it" ? "Passa a Inglese" : "Passa a Italiano"}
+          >
+            {lang === "it" ? "EN" : "IT"}
+          </button>
 
           {!token && (
             <Link
@@ -221,6 +290,15 @@ const ItalianNavbar = () => {
             >
               Soluzioni Software
             </Link>
+            <Link
+              to="/it/services"
+              className={`w-full py-2 text-center text-base font-bold ${
+                isHomeOverlayRoute ? "text-white hover:bg-white/10" : "text-violet-900 hover:bg-violet-50"
+              }`}
+              onClick={() => setMenuOpen(false)}
+            >
+              Servizi
+            </Link>
 
             <span
               className={`w-full py-2 text-center text-base font-bold cursor-pointer ${
@@ -237,6 +315,19 @@ const ItalianNavbar = () => {
             >
               Progettazione Grafica
             </span>
+
+            <button
+              type="button"
+              className={`w-full py-3 text-center font-bold ${
+                isHomeOverlayRoute ? "text-white hover:bg-white/10" : "text-violet-900 hover:bg-violet-50"
+              }`}
+              onClick={() => {
+                handleLanguageSwitch();
+                setMenuOpen(false);
+              }}
+            >
+              {lang === "it" ? "Passa a Inglese" : "Passa a Italiano"}
+            </button>
 
             {!token && (
               <Link

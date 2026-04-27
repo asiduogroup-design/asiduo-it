@@ -19,7 +19,6 @@ const COPY = {
     focusTitle: "Core Focus",
     focusSubtitle: "Practical services tailored for speed, quality, and long-term growth.",
     getInTouchLabel: "Get In Touch",
-    changeLanguageLabel: "Change Language",
     payNowLabel: "Pay Now",
   },
   it: {
@@ -39,7 +38,6 @@ const COPY = {
     focusTitle: "Aree Principali",
     focusSubtitle: "Servizi pratici e professionali per risultati rapidi e crescita continua.",
     getInTouchLabel: "Contattaci",
-    changeLanguageLabel: "Cambia lingua / Change Language",
     payNowLabel: "Paga Ora",
   },
 };
@@ -71,26 +69,21 @@ export default function InteractiveHomePage({ locale = "en" }) {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleChangeLanguage = () => {
-    localStorage.removeItem("lang_pref");
-    window.location.reload();
-  };
-
   const handleGetInTouch = () => {
     navigate(locale === "it" ? "/it/contact" : "/contact");
   };
 
   const handlePayNow = () => {
     const token = localStorage.getItem("token");
-    const countrySelectionPath = locale === "it" ? "/it/country-selection" : "/country-selection";
+    const stripePaymentPath = locale === "it" ? "/it/payment/stripe" : "/payment/stripe";
 
     if (!token) {
       const loginPath = locale === "it" ? "/it/login" : "/login";
-      navigate(`${loginPath}?redirect=${encodeURIComponent(countrySelectionPath)}`);
+      navigate(`${loginPath}?redirect=${encodeURIComponent(stripePaymentPath)}`);
       return;
     }
 
-    navigate(countrySelectionPath);
+    navigate(stripePaymentPath);
   };
 
   const activeFeature = text.rotatingFeatures[activeFeatureIndex] || text.rotatingFeatures[0];
@@ -149,14 +142,6 @@ export default function InteractiveHomePage({ locale = "en" }) {
                 className="w-full rounded-full border border-cyan-300 bg-cyan-500/15 px-6 py-3 text-sm font-bold tracking-[0.03em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-500/30 focus:outline-none focus:ring-2 focus:ring-cyan-200 sm:w-auto"
               >
                 {text.getInTouchLabel}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleChangeLanguage}
-                className="w-full rounded-full border border-white/45 bg-white/10 px-6 py-3 text-sm font-semibold tracking-[0.02em] text-white transition-all duration-300 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/60 sm:w-auto"
-              >
-                {text.changeLanguageLabel}
               </button>
             </div>
           </article>

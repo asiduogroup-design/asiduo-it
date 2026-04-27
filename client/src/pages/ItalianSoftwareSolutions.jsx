@@ -1,18 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SidebarItalian from "../components/SidebarItalian";
 import AnimatedBar from "../components/AnimatedBar";
 import RevealText from "../components/RevealText";
-import italianContent from "../data/italianContent";
+import FloatingWhatsAppButton from "../components/FloatingWhatsAppButton";
+import SOFTWARE_SOLUTIONS_CONTENT, { SERVICE_ORDER } from "../data/softwareSolutionsContent";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
-const ItalianSoftwareSolutions = () => {
-  const [selected, setSelected] = useState("Sviluppo Software Personalizzato");
+const ItalianSoftwareSolutions = ({ locale = "it" }) => {
+  const normalizedLocale = locale === "en" ? "en" : "it";
+  const copy = SOFTWARE_SOLUTIONS_CONTENT[normalizedLocale];
+  const [selected, setSelected] = useState(SERVICE_ORDER[0]);
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
-  const content = italianContent[selected];
+  const content = copy.services[selected] || copy.services[SERVICE_ORDER[0]];
+  const featureItems = useMemo(
+    () =>
+      SERVICE_ORDER.map((key) => ({
+        key,
+        label: copy.services[key].label,
+      })),
+    [copy.services]
+  );
   const navigate = useNavigate();
+  const homePath = normalizedLocale === "it" ? "/it" : "/";
+
+  useEffect(() => {
+    setSelected(SERVICE_ORDER[0]);
+  }, [normalizedLocale]);
 
   return (
-    <div className="safe-mobile-padding relative isolate min-h-screen overflow-hidden bg-[radial-gradient(130%_90%_at_0%_0%,#dbeafe_0%,#ecf3ff_40%,#f5f8fd_68%,#eef3f9_100%)] py-4 sm:py-5 md:px-4 md:py-6">
+    <div
+      translate="no"
+      className="notranslate safe-mobile-padding relative isolate min-h-screen overflow-hidden bg-[radial-gradient(130%_90%_at_0%_0%,#dbeafe_0%,#ecf3ff_40%,#f5f8fd_68%,#eef3f9_100%)] py-4 sm:py-5 md:px-4 md:py-6"
+    >
       <div className="pointer-events-none absolute inset-0 opacity-45 [background:radial-gradient(circle_at_15%_20%,rgba(59,130,246,0.16),transparent_34%),radial-gradient(circle_at_86%_18%,rgba(99,102,241,0.14),transparent_30%),radial-gradient(circle_at_70%_78%,rgba(14,165,233,0.12),transparent_38%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-[0.22] [background-image:linear-gradient(to_right,rgba(148,163,184,0.16)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] [background-size:38px_38px]" />
       <div className="pointer-events-none absolute -left-24 top-4 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />
@@ -23,23 +44,23 @@ const ItalianSoftwareSolutions = () => {
           <div className="flex items-start justify-between gap-3">
             <div className="max-w-3xl">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-indigo-600 sm:text-xs">
-                Servizi tecnologici professionali
+                {copy.pageTagline}
               </p>
               <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl md:text-4xl">
-                <RevealText text={selected} delay={18} className="align-top" />
+                <RevealText text={content.label} delay={16} className="align-top" />
               </h1>
               <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-                <RevealText text={content.desc} delay={10} className="align-top" />
+                {content.desc}
               </p>
             </div>
 
             <button
               type="button"
-              title="Torna alla Home"
-              onClick={() => navigate("/it")}
+              title={copy.homeTitle}
+              onClick={() => navigate(homePath)}
               className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-lg text-indigo-600 shadow-sm transition hover:border-indigo-200 hover:text-indigo-700"
             >
-              <i className="fa-solid fa-house" />
+              <FontAwesomeIcon icon={faHouse} />
             </button>
           </div>
         </section>
@@ -57,23 +78,11 @@ const ItalianSoftwareSolutions = () => {
                 desktopSidebarOpen ? "" : "md:border-transparent md:bg-transparent md:shadow-none md:p-0"
               }`}
             >
-              <div
-                className={`mb-3 flex flex-wrap items-center justify-end gap-2 rounded-xl bg-slate-50 px-3 py-2 ${
-                  desktopSidebarOpen ? "" : "md:hidden"
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => navigate("/it/nexi-payment")}
-                  className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow transition hover:bg-slate-800 sm:text-sm"
-                >
-                  Paga con Nexi
-                </button>
-              </div>
-
               <SidebarItalian
                 selected={selected}
                 onSelect={setSelected}
+                features={featureItems}
+                title={copy.sidebarTitle}
                 desktopOpen={desktopSidebarOpen}
                 setDesktopOpen={setDesktopSidebarOpen}
               />
@@ -113,12 +122,13 @@ const ItalianSoftwareSolutions = () => {
                 />
               </div>
               <p className="mt-3 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-relaxed text-slate-600">
-                Soluzioni progettate per prestazioni elevate, manutenzione semplice e crescita duratura.
+                {copy.closingText}
               </p>
             </div>
           </section>
         </div>
       </div>
+      <FloatingWhatsAppButton locale={normalizedLocale} />
     </div>
   );
 };
