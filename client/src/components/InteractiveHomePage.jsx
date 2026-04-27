@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 const COPY = {
   en: {
-    heroTagline: "ONE STOP PLATFORM TO GET YOUR BUSINESS ONLINE",
-    heroHeadingPrefix: "Serving Global Clients with New Age Solutions on ",
+    heroTagline: "ONE PLATFORM TO TAKE YOUR BUSINESS ONLINE",
+    heroHeadingPrefix: "We build modern growth systems across ",
     rotatingFeatures: [
       "SEO",
       "Social Media",
@@ -14,13 +14,17 @@ const COPY = {
       "Mobile Apps",
       "Web Application",
     ],
+    heroDescription:
+      "From strategy to launch, we combine software engineering, design, and digital marketing to help you scale with confidence.",
+    focusTitle: "Core Focus",
+    focusSubtitle: "Practical services tailored for speed, quality, and long-term growth.",
     getInTouchLabel: "Get In Touch",
     changeLanguageLabel: "Change Language",
-    payNowLabel: "Pay",
+    payNowLabel: "Pay Now",
   },
   it: {
     heroTagline: "PIATTAFORMA UNICA PER PORTARE ONLINE IL TUO BUSINESS",
-    heroHeadingPrefix: "Soluzioni digitali avanzate per clienti globali su ",
+    heroHeadingPrefix: "Costruiamo soluzioni digitali complete su ",
     rotatingFeatures: [
       "SEO",
       "Social Media",
@@ -30,24 +34,42 @@ const COPY = {
       "App Mobile",
       "Web Application",
     ],
+    heroDescription:
+      "Dalla strategia al rilascio, uniamo sviluppo software, design e marketing digitale per far crescere il tuo business in modo concreto.",
+    focusTitle: "Aree Principali",
+    focusSubtitle: "Servizi pratici e professionali per risultati rapidi e crescita continua.",
     getInTouchLabel: "Contattaci",
     changeLanguageLabel: "Cambia lingua / Change Language",
-    payNowLabel: "Paga",
+    payNowLabel: "Paga Ora",
   },
+};
+
+const headingFont = {
+  fontFamily: '"Bodoni MT", "Didot", "Palatino Linotype", serif',
+};
+
+const bodyFont = {
+  fontFamily: '"Trebuchet MS", "Franklin Gothic Medium", "Segoe UI", sans-serif',
 };
 
 export default function InteractiveHomePage({ locale = "en" }) {
   const navigate = useNavigate();
   const text = locale === "it" ? COPY.it : COPY.en;
   const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
+  const [animatePanel, setAnimatePanel] = useState(false);
 
   useEffect(() => {
     const rotationTimer = setInterval(() => {
       setActiveFeatureIndex((prevIndex) => (prevIndex + 1) % text.rotatingFeatures.length);
-    }, 1800);
+    }, 1900);
 
     return () => clearInterval(rotationTimer);
   }, [text.rotatingFeatures.length]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimatePanel(true), 40);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleChangeLanguage = () => {
     localStorage.removeItem("lang_pref");
@@ -72,20 +94,11 @@ export default function InteractiveHomePage({ locale = "en" }) {
   };
 
   const activeFeature = text.rotatingFeatures[activeFeatureIndex] || text.rotatingFeatures[0];
+  const focusItems = text.rotatingFeatures.slice(0, 4);
 
   return (
-    <main className="w-full overflow-x-hidden bg-slate-950 text-white">
-      <section className="safe-mobile-padding relative isolate flex min-h-screen min-h-dvh items-center justify-center overflow-hidden pb-24 pt-36 sm:px-6 sm:pb-12 sm:pt-40 md:px-12 md:pt-44 lg:px-16">
-        <button
-          type="button"
-          onClick={handlePayNow}
-          className="paynow-star fixed bottom-4 left-1/2 z-[70] -translate-x-1/2 focus:outline-none focus:ring-2 focus:ring-amber-200 sm:bottom-auto sm:left-auto sm:right-5 sm:top-1/2 sm:-translate-x-0 sm:-translate-y-1/2"
-        >
-          <span className="paynow-star__label">
-            <span className="paynow-star__text">{text.payNowLabel}</span>
-          </span>
-        </button>
-
+    <main className="w-full overflow-x-hidden bg-slate-950 text-white" style={bodyFont}>
+      <section className="safe-mobile-padding relative isolate flex min-h-screen min-h-dvh items-center justify-center overflow-hidden pb-10 pt-32 sm:px-6 sm:pt-36 md:px-10 md:pt-40">
         <video
           autoPlay
           loop
@@ -96,47 +109,85 @@ export default function InteractiveHomePage({ locale = "en" }) {
           className="absolute inset-0 h-full w-full object-cover"
         >
           <source src="/videos/Animated_Background_Video_Generation.mp4" type="video/mp4" />
-          <source
-            src="/videos/Software_Electrical_Graphic_Design_Background_Video.mp4"
-            type="video/mp4"
-          />
         </video>
 
-        <div className="absolute inset-0 bg-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-700/20 via-slate-950/55 to-slate-950/75" />
+        <div className="absolute inset-0 bg-slate-950/74" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(56,189,248,0.34),transparent_44%),radial-gradient(circle_at_82%_12%,rgba(16,185,129,0.26),transparent_36%),radial-gradient(circle_at_50%_88%,rgba(59,130,246,0.22),transparent_44%)]" />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.2] [background-image:linear-gradient(rgba(203,213,225,0.22)_1px,transparent_1px),linear-gradient(90deg,rgba(203,213,225,0.22)_1px,transparent_1px)] [background-size:48px_48px]" />
 
-        <div className="relative z-10 mx-auto w-full max-w-4xl text-center">
-          <p className="text-xs font-semibold tracking-[0.2em] text-slate-200 sm:text-sm">
-            {text.heroTagline}
-          </p>
+        <div
+          className={`relative z-10 mx-auto grid w-full max-w-6xl gap-6 transition-all duration-700 ease-out lg:grid-cols-[1.55fr_1fr] ${
+            animatePanel ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+          }`}
+        >
+          <article className="rounded-3xl border border-white/20 bg-slate-900/66 p-6 shadow-[0_24px_70px_-32px_rgba(2,132,199,0.65)] backdrop-blur-md sm:p-8 md:p-10">
+            <p className="inline-flex rounded-full border border-cyan-300/45 bg-cyan-900/35 px-3 py-1 text-[11px] font-semibold tracking-[0.16em] text-cyan-100 sm:text-xs">
+              {text.heroTagline}
+            </p>
 
-          <h1 className="mt-4 break-words text-3xl font-extrabold leading-tight text-white sm:mt-6 sm:text-4xl md:text-5xl lg:text-6xl">
-            {text.heroHeadingPrefix}
-            <span
-              key={activeFeature}
-              className="inline-block min-w-[6ch] text-sky-400 [animation:featureSwap_420ms_ease-out] sm:min-w-[8ch]"
+            <h1
+              className="mt-5 break-words text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl lg:text-[3.45rem]"
+              style={headingFont}
             >
-              {activeFeature}
-            </span>
-          </h1>
+              {text.heroHeadingPrefix}
+              <span
+                key={activeFeature}
+                className="mt-2 inline-block rounded-2xl border border-cyan-300/60 bg-cyan-500/10 px-3 py-1 text-cyan-200 [animation:featureSwap_420ms_ease-out] sm:px-4"
+              >
+                {activeFeature}
+              </span>
+            </h1>
 
-          <div className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">
+            <p className="mt-5 max-w-3xl text-sm leading-relaxed text-slate-200 sm:text-base md:text-lg">
+              {text.heroDescription}
+            </p>
+
+            <div className="mt-8 flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <button
+                type="button"
+                onClick={handleGetInTouch}
+                className="w-full rounded-full border border-cyan-300 bg-cyan-500/15 px-6 py-3 text-sm font-bold tracking-[0.03em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-500/30 focus:outline-none focus:ring-2 focus:ring-cyan-200 sm:w-auto"
+              >
+                {text.getInTouchLabel}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleChangeLanguage}
+                className="w-full rounded-full border border-white/45 bg-white/10 px-6 py-3 text-sm font-semibold tracking-[0.02em] text-white transition-all duration-300 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/60 sm:w-auto"
+              >
+                {text.changeLanguageLabel}
+              </button>
+            </div>
+          </article>
+
+          <aside className="flex flex-col justify-between rounded-3xl border border-white/20 bg-slate-900/68 p-6 shadow-[0_24px_70px_-35px_rgba(20,184,166,0.7)] backdrop-blur-md sm:p-8">
+            <div>
+              <h2 className="text-lg font-black tracking-[0.08em] text-emerald-200 sm:text-xl">
+                {text.focusTitle}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">{text.focusSubtitle}</p>
+
+              <ul className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
+                {focusItems.map((item) => (
+                  <li
+                    key={item}
+                    className="rounded-xl border border-slate-300/20 bg-slate-800/55 px-3 py-2 text-sm font-semibold tracking-[0.02em] text-slate-100"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
             <button
               type="button"
-              onClick={handleGetInTouch}
-              className="w-full rounded-full border-2 border-sky-400 bg-sky-500/10 px-6 py-3 text-base font-bold text-white transition-all duration-300 hover:scale-[1.02] hover:bg-sky-500/30 focus:outline-none focus:ring-2 focus:ring-sky-300 sm:w-auto sm:px-7"
+              onClick={handlePayNow}
+              className="mt-6 rounded-2xl border border-amber-300/70 bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400 px-5 py-3 text-sm font-black tracking-[0.08em] text-slate-900 shadow-[0_10px_30px_-14px_rgba(245,158,11,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-amber-200"
             >
-              {text.getInTouchLabel}
+              {text.payNowLabel}
             </button>
-
-            <button
-              type="button"
-              onClick={handleChangeLanguage}
-              className="w-full rounded-full border border-white/50 bg-white/10 px-6 py-3 text-base font-semibold text-white transition-all duration-300 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/60 sm:w-auto sm:px-7"
-            >
-              {text.changeLanguageLabel}
-            </button>
-          </div>
+          </aside>
         </div>
       </section>
 
@@ -149,131 +200,6 @@ export default function InteractiveHomePage({ locale = "en" }) {
           to {
             opacity: 1;
             transform: translateY(0);
-          }
-        }
-
-        .paynow-star {
-          width: 148px;
-          aspect-ratio: 1;
-          border: 0;
-          cursor: pointer;
-          display: grid;
-          place-items: center;
-          position: fixed;
-          overflow: hidden;
-          isolation: isolate;
-          background: radial-gradient(
-            circle at 32% 24%,
-            #fff8c5 0%,
-            #ffd95a 34%,
-            #f59e0b 70%,
-            #d97706 100%
-          );
-          color: #fff;
-          clip-path: polygon(
-            50% 2%,
-            61% 35%,
-            97% 35%,
-            68% 56%,
-            79% 92%,
-            50% 70%,
-            21% 92%,
-            32% 56%,
-            3% 35%,
-            39% 35%
-          );
-          box-shadow: 0 0 18px rgba(251, 191, 36, 0.75), 0 0 40px rgba(245, 158, 11, 0.45);
-          transition: filter 220ms ease, box-shadow 220ms ease;
-          animation: payNowStarGlow 2.2s ease-in-out infinite;
-        }
-
-        .paynow-star::before {
-          content: "";
-          position: absolute;
-          inset: -75% -25%;
-          background: linear-gradient(
-            115deg,
-            transparent 35%,
-            rgba(255, 255, 255, 0.28) 44%,
-            rgba(255, 255, 255, 0.95) 50%,
-            rgba(255, 255, 255, 0.28) 56%,
-            transparent 66%
-          );
-          transform: translateX(-125%) rotate(16deg);
-          animation: payNowStarShine 2.9s linear infinite;
-          z-index: 0;
-          pointer-events: none;
-        }
-
-        .paynow-star:hover {
-          filter: brightness(1.06);
-        }
-
-        .paynow-star__label {
-          position: relative;
-          z-index: 1;
-          width: 82%;
-          display: grid;
-          place-items: center;
-          text-align: center;
-          text-transform: uppercase;
-          transform: rotate(-8deg) skewX(-4deg);
-        }
-
-        .paynow-star__label::before {
-          content: "";
-          position: absolute;
-          left: 7%;
-          right: 7%;
-          top: 38%;
-          height: 32%;
-          border-radius: 999px;
-          background: linear-gradient(180deg, rgba(255, 252, 229, 0.96) 0%, rgba(255, 239, 166, 0.94) 100%);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 2px 6px rgba(74, 17, 120, 0.18);
-          z-index: -1;
-        }
-
-        .paynow-star__text {
-          position: relative;
-          display: inline-block;
-          padding: 0.02rem 0.32rem;
-          letter-spacing: 0.06em;
-          font-weight: 900;
-          line-height: 1;
-          font-size: 1rem;
-          color: #3a0f64;
-          text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55), 0 1px 3px rgba(58, 15, 100, 0.2);
-        }
-
-        @keyframes payNowStarShine {
-          0% {
-            transform: translateX(-125%) rotate(16deg);
-          }
-          40% {
-            transform: translateX(130%) rotate(16deg);
-          }
-          100% {
-            transform: translateX(130%) rotate(16deg);
-          }
-        }
-
-        @keyframes payNowStarGlow {
-          0%,
-          100% {
-            box-shadow: 0 0 14px rgba(251, 191, 36, 0.68), 0 0 34px rgba(245, 158, 11, 0.42);
-          }
-          50% {
-            box-shadow: 0 0 22px rgba(253, 224, 71, 0.88), 0 0 56px rgba(251, 191, 36, 0.64);
-          }
-        }
-
-        @media (max-width: 640px) {
-          .paynow-star {
-            width: 124px;
-          }
-
-          .paynow-star__text {
-            font-size: 0.84rem;
           }
         }
       `}</style>
