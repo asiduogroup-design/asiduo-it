@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FloatingWhatsAppButton from "../components/FloatingWhatsAppButton";
 import {
+  faArrowUpRightFromSquare,
   faChevronLeft,
   faChevronRight,
   faCircleCheck,
@@ -33,6 +35,7 @@ const COPY = {
     resultsLabel: "results found",
     quoteTitle: "Estimated Quotation",
     quoteCta: "Quotation",
+    visitCta: "Visit",
     noResults: "No services match your search. Try another keyword or filter.",
     modalTitle: "Quotation Request",
     modalSubtitle: "Fill your details and we will share a detailed quotation soon.",
@@ -70,6 +73,7 @@ const COPY = {
     resultsLabel: "risultati trovati",
     quoteTitle: "Preventivo Stimato",
     quoteCta: "Preventivo",
+    visitCta: "Visita",
     noResults: "Nessun servizio trovato. Prova con un'altra parola chiave o filtro.",
     modalTitle: "Richiesta Preventivo",
     modalSubtitle: "Compila i dati e ti invieremo un preventivo dettagliato al piu presto.",
@@ -423,6 +427,7 @@ const bodyFont = {
 export default function ServicesCatalogPage({ locale = "en" }) {
   const normalizedLocale = locale === "it" ? "it" : "en";
   const text = COPY[normalizedLocale];
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
@@ -614,6 +619,16 @@ export default function ServicesCatalogPage({ locale = "en" }) {
     );
   };
 
+  const handleVisitService = (service) => {
+    const localePrefix = normalizedLocale === "it" ? "/it" : "";
+    const targetPath =
+      service.category === "software"
+        ? `${localePrefix}/software-solutions`
+        : `${localePrefix}/contact`;
+
+    navigate(targetPath);
+  };
+
   return (
     <main
       translate="no"
@@ -726,10 +741,6 @@ export default function ServicesCatalogPage({ locale = "en" }) {
           </div>
         </header>
 
-        <div className="mt-6 text-sm font-semibold text-slate-700 sm:text-base">
-          {filteredServices.length} {text.resultsLabel}
-        </div>
-
         {filteredServices.length === 0 ? (
           <div className="mt-5 rounded-2xl border border-slate-200 bg-white/85 p-8 text-center text-slate-700 shadow-[0_10px_30px_-22px_rgba(30,41,59,0.45)]">
             {text.noResults}
@@ -785,14 +796,25 @@ export default function ServicesCatalogPage({ locale = "en" }) {
                       ))}
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => openQuoteModal(service)}
-                      className={`mt-5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-black tracking-[0.05em] transition-all duration-300 focus:outline-none focus:ring-2 ${theme.cta}`}
-                    >
-                      <FontAwesomeIcon icon={faFileInvoiceDollar} />
-                      {text.quoteCta}
-                    </button>
+                    <div className="mt-5 flex items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => openQuoteModal(service)}
+                        className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-black tracking-[0.05em] transition-all duration-300 focus:outline-none focus:ring-2 ${theme.cta}`}
+                      >
+                        <FontAwesomeIcon icon={faFileInvoiceDollar} />
+                        {text.quoteCta}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleVisitService(service)}
+                        className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-black tracking-[0.05em] transition-all duration-300 focus:outline-none focus:ring-2 ${theme.cta}`}
+                      >
+                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                        {text.visitCta}
+                      </button>
+                    </div>
                   </article>
                 );
               })()

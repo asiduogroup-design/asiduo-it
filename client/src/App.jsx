@@ -65,16 +65,34 @@ function AppRoutes({ lang, setLang }) {
             )
           }
         />
-        <Route path="/contact" element={<ContactPageItalian locale="en" />} />
-        <Route path="/services" element={<ServicesCatalogPage locale="en" />} />
-        <Route path="/software-solutions" element={<ItalianSoftwareSolutions locale="en" />} />
-        <Route path="/login" element={<ItalianLoginPage locale="en" />} />
+        <Route
+          path="/contact"
+          element={lang === "it" ? <Navigate to="/it/contact" replace /> : <ContactPageItalian locale="en" />}
+        />
+        <Route
+          path="/services"
+          element={lang === "it" ? <Navigate to="/it/services" replace /> : <ServicesCatalogPage locale="en" />}
+        />
+        <Route
+          path="/software-solutions"
+          element={
+            lang === "it" ? <Navigate to="/it/software-solutions" replace /> : <ItalianSoftwareSolutions locale="en" />
+          }
+        />
+        <Route
+          path="/login"
+          element={lang === "it" ? <Navigate to="/it/login" replace /> : <ItalianLoginPage locale="en" />}
+        />
         <Route
           path="/payment/stripe"
           element={
-            <ProtectedRoute redirectTo="/login">
-              <StripePayment locale="en" />
-            </ProtectedRoute>
+            lang === "it" ? (
+              <Navigate to="/it/payment/stripe" replace />
+            ) : (
+              <ProtectedRoute redirectTo="/login">
+                <StripePayment locale="en" />
+              </ProtectedRoute>
+            )
           }
         />
 
@@ -88,16 +106,34 @@ function AppRoutes({ lang, setLang }) {
             )
           }
         />
-        <Route path="/it/contact" element={<ContactPageItalian locale="it" />} />
-        <Route path="/it/services" element={<ServicesCatalogPage locale="it" />} />
-        <Route path="/it/software-solutions" element={<ItalianSoftwareSolutions locale="it" />} />
-        <Route path="/it/login" element={<ItalianLoginPage locale="it" />} />
+        <Route
+          path="/it/contact"
+          element={lang === "en" ? <Navigate to="/contact" replace /> : <ContactPageItalian locale="it" />}
+        />
+        <Route
+          path="/it/services"
+          element={lang === "en" ? <Navigate to="/services" replace /> : <ServicesCatalogPage locale="it" />}
+        />
+        <Route
+          path="/it/software-solutions"
+          element={
+            lang === "en" ? <Navigate to="/software-solutions" replace /> : <ItalianSoftwareSolutions locale="it" />
+          }
+        />
+        <Route
+          path="/it/login"
+          element={lang === "en" ? <Navigate to="/login" replace /> : <ItalianLoginPage locale="it" />}
+        />
         <Route
           path="/it/payment/stripe"
           element={
-            <ProtectedRoute redirectTo="/it/login">
-              <StripePayment locale="it" />
-            </ProtectedRoute>
+            lang === "en" ? (
+              <Navigate to="/payment/stripe" replace />
+            ) : (
+              <ProtectedRoute redirectTo="/it/login">
+                <StripePayment locale="it" />
+              </ProtectedRoute>
+            )
           }
         />
 
