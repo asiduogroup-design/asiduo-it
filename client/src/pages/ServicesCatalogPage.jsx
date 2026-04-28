@@ -41,7 +41,21 @@ const COPY = {
     modalTitle: "Request a Quote",
     modalSubtitle: "Tell us your requirements and we'll send a tailored quote.",
     packageBuilderTitle: "Build Your Website Package",
+    seoPackageBuilderTitle: "Build Your SEO Package",
+    domainPackageBuilderTitle: "Build Your Domain, Hosting & Deployment Package",
     websiteTypeLabel: "Website Type",
+    seoBasePlanLabel: "SEO Base Plan",
+    seoCategoriesLabel: "Charge Categories",
+    seoOptionOnPageLabel: "On-Page Optimization",
+    seoOptionTechnicalLabel: "Technical SEO Audit",
+    seoOptionLinkBuildingLabel: "Quality Link Building",
+    seoOptionLocalLabel: "Local SEO & GMB",
+    domainBasePlanLabel: "Domain Setup Base Plan",
+    domainCategoriesLabel: "Infrastructure Categories",
+    domainOptionDnsLabel: "DNS and Records Configuration",
+    domainOptionSslLabel: "SSL and Security Hardening",
+    domainOptionHostingLabel: "Hosting Provisioning",
+    domainOptionDeployLabel: "Deployment Pipeline and Go-Live",
     pagesLabel: "Pages",
     addOnsLabel: "Add-ons",
     baseLabel: "Base",
@@ -110,7 +124,21 @@ const COPY = {
     modalTitle: "Richiedi Preventivo",
     modalSubtitle: "Condividi i tuoi requisiti e ti invieremo un preventivo su misura.",
     packageBuilderTitle: "Crea il tuo pacchetto sito web",
+    seoPackageBuilderTitle: "Crea il tuo pacchetto SEO",
+    domainPackageBuilderTitle: "Crea il tuo pacchetto Dominio, Hosting e Deploy",
     websiteTypeLabel: "Tipo di sito web",
+    seoBasePlanLabel: "Piano Base SEO",
+    seoCategoriesLabel: "Categorie di Costo",
+    seoOptionOnPageLabel: "Ottimizzazione On-Page",
+    seoOptionTechnicalLabel: "Audit SEO Tecnico",
+    seoOptionLinkBuildingLabel: "Link Building di Qualita",
+    seoOptionLocalLabel: "SEO Locale e GMB",
+    domainBasePlanLabel: "Piano Base Setup Dominio",
+    domainCategoriesLabel: "Categorie Infrastruttura",
+    domainOptionDnsLabel: "Configurazione DNS e Record",
+    domainOptionSslLabel: "SSL e Hardening Sicurezza",
+    domainOptionHostingLabel: "Provisioning Hosting",
+    domainOptionDeployLabel: "Pipeline Deploy e Go-Live",
     pagesLabel: "Pagine",
     addOnsLabel: "Extra",
     baseLabel: "Base",
@@ -489,6 +517,8 @@ const INITIAL_CONTACT_SALES_FORM_STATE = {
 };
 
 const WEBSITE_PACKAGE_SERVICE_ID = "website-design-dev";
+const SEO_AUDIT_SERVICE_ID = "seo-optimization";
+const DOMAIN_HOSTING_SETUP_SERVICE_ID = "domain-hosting-setup";
 const CONTACT_SALES_EMAIL = "asiduogroup@gmail.com";
 const CONTACT_SALES_WHATSAPP_PHONE = "393248872715";
 
@@ -586,6 +616,104 @@ const WEBSITE_ADDON_OPTIONS = [
   },
 ];
 
+const SEO_BASE_PLAN_OPTION = {
+  value: "seo-foundation",
+  basePrice: 300,
+  deliveryDays: 5,
+  label: {
+    en: "SEO Foundation",
+    it: "Fondamenta SEO",
+  },
+};
+
+const SEO_CATEGORY_OPTIONS = [
+  {
+    key: "onPage",
+    price: 200,
+    deliveryExtraDays: 2,
+    label: {
+      en: "On-Page Optimization",
+      it: "Ottimizzazione On-Page",
+    },
+  },
+  {
+    key: "technicalAudit",
+    price: 250,
+    deliveryExtraDays: 2,
+    label: {
+      en: "Technical SEO Audit",
+      it: "Audit SEO Tecnico",
+    },
+  },
+  {
+    key: "linkBuilding",
+    price: 300,
+    deliveryExtraDays: 3,
+    label: {
+      en: "Quality Link Building",
+      it: "Link Building di Qualita",
+    },
+  },
+  {
+    key: "localSeo",
+    price: 150,
+    deliveryExtraDays: 1,
+    label: {
+      en: "Local SEO & GMB",
+      it: "SEO Locale e GMB",
+    },
+  },
+];
+
+const DOMAIN_BASE_PLAN_OPTION = {
+  value: "domain-hosting-base",
+  basePrice: 180,
+  deliveryDays: 2,
+  label: {
+    en: "Domain and Initial Setup",
+    it: "Dominio e Setup Iniziale",
+  },
+};
+
+const DOMAIN_CATEGORY_OPTIONS = [
+  {
+    key: "dnsConfiguration",
+    price: 90,
+    deliveryExtraDays: 1,
+    label: {
+      en: "DNS and Records Configuration",
+      it: "Configurazione DNS e Record",
+    },
+  },
+  {
+    key: "sslSecurity",
+    price: 80,
+    deliveryExtraDays: 1,
+    label: {
+      en: "SSL and Security Hardening",
+      it: "SSL e Hardening Sicurezza",
+    },
+  },
+  {
+    key: "hostingProvisioning",
+    price: 140,
+    deliveryExtraDays: 2,
+    label: {
+      en: "Hosting Provisioning",
+      it: "Provisioning Hosting",
+    },
+  },
+  {
+    key: "deploymentPipeline",
+    price: 160,
+    deliveryExtraDays: 2,
+    label: {
+      en: "Deployment Pipeline and Go-Live",
+      it: "Pipeline Deploy e Go-Live",
+    },
+  },
+];
+
 const normalizeLookupToken = (value = "") =>
   String(value)
     .toLowerCase()
@@ -643,6 +771,24 @@ const createInitialWebsitePackageState = () => ({
   },
 });
 
+const createInitialSeoPackageState = () => ({
+  categories: {
+    onPage: false,
+    technicalAudit: false,
+    linkBuilding: false,
+    localSeo: false,
+  },
+});
+
+const createInitialDomainPackageState = () => ({
+  categories: {
+    dnsConfiguration: false,
+    sslSecurity: false,
+    hostingProvisioning: false,
+    deploymentPipeline: false,
+  },
+});
+
 const calculateWebsitePackageMetrics = (packageState) => {
   const selectedWebsiteType = resolveWebsiteTypeOption(packageState.websiteType);
   const selectedWebsitePageRange = resolveWebsitePageOption(packageState.pages);
@@ -664,6 +810,54 @@ const calculateWebsitePackageMetrics = (packageState) => {
     selectedWebsiteTotalPrice:
       selectedWebsiteBasePrice + selectedWebsitePageExtraPrice + selectedWebsiteAddOnsTotalPrice,
     selectedWebsiteDeliveryDays,
+  };
+};
+
+const calculateSeoPackageMetrics = (packageState) => {
+  const selectedSeoCategories = SEO_CATEGORY_OPTIONS.filter((option) =>
+    Boolean(packageState.categories?.[option.key])
+  );
+  const selectedSeoCategoriesTotalPrice = selectedSeoCategories.reduce(
+    (total, option) => total + (Number(option.price) || 0),
+    0
+  );
+  const selectedSeoCategoriesTotalDeliveryDays = selectedSeoCategories.reduce(
+    (total, option) => total + (Number(option.deliveryExtraDays) || 0),
+    0
+  );
+
+  return {
+    selectedSeoCategories,
+    selectedSeoCategoriesTotalPrice,
+    selectedSeoBasePrice: Number(SEO_BASE_PLAN_OPTION.basePrice) || 0,
+    selectedSeoTotalPrice:
+      (Number(SEO_BASE_PLAN_OPTION.basePrice) || 0) + selectedSeoCategoriesTotalPrice,
+    selectedSeoDeliveryDays:
+      (Number(SEO_BASE_PLAN_OPTION.deliveryDays) || 0) + selectedSeoCategoriesTotalDeliveryDays,
+  };
+};
+
+const calculateDomainPackageMetrics = (packageState) => {
+  const selectedDomainCategories = DOMAIN_CATEGORY_OPTIONS.filter((option) =>
+    Boolean(packageState.categories?.[option.key])
+  );
+  const selectedDomainCategoriesTotalPrice = selectedDomainCategories.reduce(
+    (total, option) => total + (Number(option.price) || 0),
+    0
+  );
+  const selectedDomainCategoriesTotalDeliveryDays = selectedDomainCategories.reduce(
+    (total, option) => total + (Number(option.deliveryExtraDays) || 0),
+    0
+  );
+
+  return {
+    selectedDomainCategories,
+    selectedDomainCategoriesTotalPrice,
+    selectedDomainBasePrice: Number(DOMAIN_BASE_PLAN_OPTION.basePrice) || 0,
+    selectedDomainTotalPrice:
+      (Number(DOMAIN_BASE_PLAN_OPTION.basePrice) || 0) + selectedDomainCategoriesTotalPrice,
+    selectedDomainDeliveryDays:
+      (Number(DOMAIN_BASE_PLAN_OPTION.deliveryDays) || 0) + selectedDomainCategoriesTotalDeliveryDays,
   };
 };
 
@@ -690,6 +884,8 @@ export default function ServicesCatalogPage({ locale = "en" }) {
   const [formError, setFormError] = useState("");
   const [submitState, setSubmitState] = useState("idle");
   const [websitePackage, setWebsitePackage] = useState(() => createInitialWebsitePackageState());
+  const [seoPackage, setSeoPackage] = useState(() => createInitialSeoPackageState());
+  const [domainPackage, setDomainPackage] = useState(() => createInitialDomainPackageState());
   const [isContactSalesChooserOpen, setIsContactSalesChooserOpen] = useState(false);
   const [isContactSalesEmailFormOpen, setIsContactSalesEmailFormOpen] = useState(false);
   const [contactSalesFormData, setContactSalesFormData] = useState(INITIAL_CONTACT_SALES_FORM_STATE);
@@ -801,6 +997,8 @@ export default function ServicesCatalogPage({ locale = "en" }) {
   }, [normalizedLocale]);
 
   const isWebsitePackageService = selectedService?.id === WEBSITE_PACKAGE_SERVICE_ID;
+  const isSeoPackageService = selectedService?.id === SEO_AUDIT_SERVICE_ID;
+  const isDomainPackageService = selectedService?.id === DOMAIN_HOSTING_SETUP_SERVICE_ID;
 
   const {
     selectedWebsiteType,
@@ -812,33 +1010,89 @@ export default function ServicesCatalogPage({ locale = "en" }) {
     selectedWebsiteDeliveryDays,
   } = useMemo(() => calculateWebsitePackageMetrics(websitePackage), [websitePackage]);
 
+  const {
+    selectedSeoCategories,
+    selectedSeoCategoriesTotalPrice,
+    selectedSeoBasePrice,
+    selectedSeoTotalPrice,
+    selectedSeoDeliveryDays,
+  } = useMemo(() => calculateSeoPackageMetrics(seoPackage), [seoPackage]);
+
+  const {
+    selectedDomainCategories,
+    selectedDomainCategoriesTotalPrice,
+    selectedDomainBasePrice,
+    selectedDomainTotalPrice,
+    selectedDomainDeliveryDays,
+  } = useMemo(() => calculateDomainPackageMetrics(domainPackage), [domainPackage]);
+
   const selectedOptionsSummary = useMemo(() => {
-    if (!isWebsitePackageService) {
-      return "";
+    if (isWebsitePackageService) {
+      const addOnsText =
+        selectedWebsiteAddOns.length > 0
+          ? selectedWebsiteAddOns.map((addon) => addon.label[normalizedLocale]).join(", ")
+          : text.noneLabel;
+
+      return [
+        `${text.websiteTypeLabel}: ${selectedWebsiteType.label[normalizedLocale]}`,
+        `${text.pagesLabel}: ${selectedWebsitePageRange.label[normalizedLocale]}${
+          selectedWebsitePageExtraPrice > 0 ? ` (+${formatEuro(selectedWebsitePageExtraPrice)})` : ""
+        }`,
+        `${text.addOnsLabel}: ${addOnsText}`,
+      ].join(" | ");
     }
 
-    const addOnsText =
-      selectedWebsiteAddOns.length > 0
-        ? selectedWebsiteAddOns.map((addon) => addon.label[normalizedLocale]).join(", ")
-        : text.noneLabel;
+    if (isSeoPackageService) {
+      const selectedCategoryText =
+        selectedSeoCategories.length > 0
+          ? selectedSeoCategories
+              .map((category) => `${category.label[normalizedLocale]} (+${formatEuro(category.price)})`)
+              .join(", ")
+          : text.noneLabel;
 
-    return [
-      `${text.websiteTypeLabel}: ${selectedWebsiteType.label[normalizedLocale]}`,
-      `${text.pagesLabel}: ${selectedWebsitePageRange.label[normalizedLocale]}${
-        selectedWebsitePageExtraPrice > 0 ? ` (+${formatEuro(selectedWebsitePageExtraPrice)})` : ""
-      }`,
-      `${text.addOnsLabel}: ${addOnsText}`,
-    ].join(" | ");
+      return [
+        `${text.seoBasePlanLabel}: ${SEO_BASE_PLAN_OPTION.label[normalizedLocale]} (${formatEuro(
+          SEO_BASE_PLAN_OPTION.basePrice
+        )})`,
+        `${text.seoCategoriesLabel}: ${selectedCategoryText}`,
+      ].join(" | ");
+    }
+
+    if (isDomainPackageService) {
+      const selectedDomainCategoryText =
+        selectedDomainCategories.length > 0
+          ? selectedDomainCategories
+              .map((category) => `${category.label[normalizedLocale]} (+${formatEuro(category.price)})`)
+              .join(", ")
+          : text.noneLabel;
+
+      return [
+        `${text.domainBasePlanLabel}: ${DOMAIN_BASE_PLAN_OPTION.label[normalizedLocale]} (${formatEuro(
+          DOMAIN_BASE_PLAN_OPTION.basePrice
+        )})`,
+        `${text.domainCategoriesLabel}: ${selectedDomainCategoryText}`,
+      ].join(" | ");
+    }
+
+    return "";
   }, [
+    isDomainPackageService,
+    isSeoPackageService,
     isWebsitePackageService,
+    selectedDomainCategories,
     normalizedLocale,
+    selectedSeoCategories,
     selectedWebsiteAddOns,
     selectedWebsitePageExtraPrice,
     selectedWebsitePageRange.label,
     selectedWebsiteType.label,
     text.addOnsLabel,
+    text.domainBasePlanLabel,
+    text.domainCategoriesLabel,
     text.noneLabel,
     text.pagesLabel,
+    text.seoBasePlanLabel,
+    text.seoCategoriesLabel,
     text.websiteTypeLabel,
   ]);
 
@@ -847,6 +1101,14 @@ export default function ServicesCatalogPage({ locale = "en" }) {
   )} + ${text.pagesCostLabel} ${formatEuro(selectedWebsitePageExtraPrice)} + ${
     text.addOnsCostLabel
   } ${formatEuro(selectedWebsiteAddOnsTotalPrice)}`;
+
+  const selectedSeoPriceBreakdownLabel = `${text.baseLabel} ${formatEuro(
+    selectedSeoBasePrice
+  )} + ${text.addOnsCostLabel} ${formatEuro(selectedSeoCategoriesTotalPrice)}`;
+
+  const selectedDomainPriceBreakdownLabel = `${text.baseLabel} ${formatEuro(
+    selectedDomainBasePrice
+  )} + ${text.addOnsCostLabel} ${formatEuro(selectedDomainCategoriesTotalPrice)}`;
 
   const openQuoteModal = (service) => {
     setSelectedService(service);
@@ -859,6 +1121,8 @@ export default function ServicesCatalogPage({ locale = "en" }) {
     setContactSalesFormSubmitState("idle");
     setContactSalesFormData(INITIAL_CONTACT_SALES_FORM_STATE);
     setWebsitePackage(createInitialWebsitePackageState());
+    setSeoPackage(createInitialSeoPackageState());
+    setDomainPackage(createInitialDomainPackageState());
     setFormData({
       ...INITIAL_FORM_STATE,
       message:
@@ -900,6 +1164,8 @@ export default function ServicesCatalogPage({ locale = "en" }) {
     setContactSalesFormSubmitState("idle");
     setContactSalesFormData(INITIAL_CONTACT_SALES_FORM_STATE);
     setWebsitePackage(createInitialWebsitePackageState());
+    setSeoPackage(createInitialSeoPackageState());
+    setDomainPackage(createInitialDomainPackageState());
     setFormData(INITIAL_FORM_STATE);
   };
 
@@ -1056,6 +1322,28 @@ export default function ServicesCatalogPage({ locale = "en" }) {
     }));
   };
 
+  const handleSeoCategoryChange = (event) => {
+    const { name, checked } = event.target;
+    setSeoPackage((previous) => ({
+      ...previous,
+      categories: {
+        ...previous.categories,
+        [name]: checked,
+      },
+    }));
+  };
+
+  const handleDomainCategoryChange = (event) => {
+    const { name, checked } = event.target;
+    setDomainPackage((previous) => ({
+      ...previous,
+      categories: {
+        ...previous.categories,
+        [name]: checked,
+      },
+    }));
+  };
+
   const handleQuoteSubmit = async (event) => {
     event.preventDefault();
 
@@ -1082,10 +1370,25 @@ export default function ServicesCatalogPage({ locale = "en" }) {
     setFormError("");
     setSubmitState("submitting");
 
-    const currentTotalPriceLabel = formatEuro(selectedWebsiteTotalPrice);
-    const currentDeliveryLabel = `${selectedWebsiteDeliveryDays} ${text.daysLabel}`;
+    const hasPackagePricing = isWebsitePackageService || isSeoPackageService || isDomainPackageService;
+    const currentTotalPriceValue = isWebsitePackageService
+      ? selectedWebsiteTotalPrice
+      : isSeoPackageService
+      ? selectedSeoTotalPrice
+      : isDomainPackageService
+      ? selectedDomainTotalPrice
+      : 0;
+    const currentDeliveryDaysValue = isWebsitePackageService
+      ? selectedWebsiteDeliveryDays
+      : isSeoPackageService
+      ? selectedSeoDeliveryDays
+      : isDomainPackageService
+      ? selectedDomainDeliveryDays
+      : 0;
+    const currentTotalPriceLabel = formatEuro(currentTotalPriceValue);
+    const currentDeliveryLabel = `${currentDeliveryDaysValue} ${text.daysLabel}`;
     const pricingSummary =
-      isWebsitePackageService &&
+      hasPackagePricing &&
       `${selectedOptionsSummary} | ${text.totalPriceLabel}: ${currentTotalPriceLabel} | ${text.deliveryLabel}: ${currentDeliveryLabel}`;
     const combinedMessage = [
       "New Quote Request:",
@@ -1103,8 +1406,8 @@ export default function ServicesCatalogPage({ locale = "en" }) {
         serviceCategory: selectedService.category,
         estimatedQuote: selectedService.quote[normalizedLocale],
         selectedOptions: selectedOptionsSummary,
-        totalPrice: isWebsitePackageService ? currentTotalPriceLabel : "",
-        deliveryTime: isWebsitePackageService ? currentDeliveryLabel : "",
+        totalPrice: hasPackagePricing ? currentTotalPriceLabel : "",
+        deliveryTime: hasPackagePricing ? currentDeliveryLabel : "",
         name: trimmedName,
         phone: trimmedPhone,
         email: trimmedEmail,
@@ -1138,6 +1441,16 @@ export default function ServicesCatalogPage({ locale = "en" }) {
 
     if (service.id === WEBSITE_PACKAGE_SERVICE_ID) {
       navigate(`${localePrefix}/website-design-development`);
+      return;
+    }
+
+    if (service.id === SEO_AUDIT_SERVICE_ID) {
+      navigate(`${localePrefix}/seo-audit-optimization`);
+      return;
+    }
+
+    if (service.id === DOMAIN_HOSTING_SETUP_SERVICE_ID) {
+      navigate(`${localePrefix}/domain-hosting-deployment-setup`);
       return;
     }
 
@@ -1500,8 +1813,145 @@ export default function ServicesCatalogPage({ locale = "en" }) {
                   </section>
                 )}
 
+                {isSeoPackageService && (
+                  <section
+                    translate="no"
+                    className="notranslate sm:col-span-2 rounded-2xl border border-emerald-200/90 bg-white/80 p-4 shadow-sm"
+                  >
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-emerald-700">
+                      {text.seoPackageBuilderTitle}
+                    </p>
+
+                    <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50/75 px-4 py-3">
+                      <p className="text-xs font-bold uppercase tracking-[0.08em] text-emerald-700">
+                        {text.seoBasePlanLabel}
+                      </p>
+                      <p className="mt-1 text-sm font-black text-slate-900">
+                        {SEO_BASE_PLAN_OPTION.label[normalizedLocale]} (+{formatEuro(SEO_BASE_PLAN_OPTION.basePrice)})
+                      </p>
+                      <p className="mt-1 text-xs font-semibold text-stone-600">
+                        {text.deliveryLabel}: {SEO_BASE_PLAN_OPTION.deliveryDays} {text.daysLabel}
+                      </p>
+                    </div>
+
+                    <fieldset className="mt-4">
+                      <legend className="text-sm font-semibold text-slate-800">{text.seoCategoriesLabel}</legend>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {SEO_CATEGORY_OPTIONS.map((option) => (
+                          <label
+                            key={option.key}
+                            className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/75 px-3 py-1.5 text-xs font-semibold text-emerald-800"
+                          >
+                            <input
+                              type="checkbox"
+                              name={option.key}
+                              checked={seoPackage.categories[option.key]}
+                              onChange={handleSeoCategoryChange}
+                              className="h-4 w-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-400"
+                            />
+                            <span>
+                              {option.label[normalizedLocale]} (+{formatEuro(option.price)})
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+
+                    <div
+                      key={`${selectedSeoTotalPrice}-${selectedSeoDeliveryDays}-${selectedSeoCategoriesTotalPrice}`}
+                      translate="no"
+                      className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3"
+                    >
+                      <p className="text-sm font-black text-emerald-800">
+                        {text.totalPriceLabel}: {formatEuro(selectedSeoTotalPrice)}
+                      </p>
+                      <p className="mt-1 text-xs font-semibold text-stone-600">
+                        {selectedSeoPriceBreakdownLabel}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-stone-700">
+                        {text.deliveryLabel}: {selectedSeoDeliveryDays} {text.daysLabel}
+                      </p>
+                    </div>
+                  </section>
+                )}
+
+                {isDomainPackageService && (
+                  <section
+                    translate="no"
+                    className="notranslate sm:col-span-2 rounded-2xl border border-sky-200/90 bg-white/80 p-4 shadow-sm"
+                  >
+                    <p className="text-xs font-bold uppercase tracking-[0.1em] text-sky-700">
+                      {text.domainPackageBuilderTitle}
+                    </p>
+
+                    <div className="mt-3 rounded-xl border border-sky-200 bg-sky-50/75 px-4 py-3">
+                      <p className="text-xs font-bold uppercase tracking-[0.08em] text-sky-700">
+                        {text.domainBasePlanLabel}
+                      </p>
+                      <p className="mt-1 text-sm font-black text-slate-900">
+                        {DOMAIN_BASE_PLAN_OPTION.label[normalizedLocale]} (+{formatEuro(DOMAIN_BASE_PLAN_OPTION.basePrice)})
+                      </p>
+                      <p className="mt-1 text-xs font-semibold text-stone-600">
+                        {text.deliveryLabel}: {DOMAIN_BASE_PLAN_OPTION.deliveryDays} {text.daysLabel}
+                      </p>
+                    </div>
+
+                    <fieldset className="mt-4">
+                      <legend className="text-sm font-semibold text-slate-800">{text.domainCategoriesLabel}</legend>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {DOMAIN_CATEGORY_OPTIONS.map((option) => (
+                          <label
+                            key={option.key}
+                            className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50/75 px-3 py-1.5 text-xs font-semibold text-sky-800"
+                          >
+                            <input
+                              type="checkbox"
+                              name={option.key}
+                              checked={domainPackage.categories[option.key]}
+                              onChange={handleDomainCategoryChange}
+                              className="h-4 w-4 rounded border-stone-300 text-sky-600 focus:ring-sky-400"
+                            />
+                            <span>
+                              {option.label[normalizedLocale]} (+{formatEuro(option.price)})
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+
+                    <div
+                      key={`${selectedDomainTotalPrice}-${selectedDomainDeliveryDays}-${selectedDomainCategoriesTotalPrice}`}
+                      translate="no"
+                      className="mt-4 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-3"
+                    >
+                      <p className="text-sm font-black text-sky-800">
+                        {text.totalPriceLabel}: {formatEuro(selectedDomainTotalPrice)}
+                      </p>
+                      <p className="mt-1 text-xs font-semibold text-stone-600">
+                        {selectedDomainPriceBreakdownLabel}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-stone-700">
+                        {text.deliveryLabel}: {selectedDomainDeliveryDays} {text.daysLabel}
+                      </p>
+                    </div>
+                  </section>
+                )}
+
                 <input type="hidden" name="selectedOptions" value={selectedOptionsSummary} readOnly />
-                <input type="hidden" name="totalPrice" value={formatEuro(selectedWebsiteTotalPrice)} readOnly />
+                <input
+                  type="hidden"
+                  name="totalPrice"
+                  value={formatEuro(
+                    isWebsitePackageService
+                      ? selectedWebsiteTotalPrice
+                      : isSeoPackageService
+                      ? selectedSeoTotalPrice
+                      : isDomainPackageService
+                      ? selectedDomainTotalPrice
+                      : 0
+                  )}
+                  readOnly
+                />
 
                 <label className="text-sm font-semibold text-slate-800">
                   {text.nameLabel}

@@ -4,9 +4,11 @@ import GoogleTranslateController from "./components/GoogleTranslateController";
 import ItalianNavbar from "./components/ItalianNavbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ContactPageItalian from "./pages/ContactPageItalian";
+import DomainHostingDeploymentPage from "./pages/DomainHostingDeploymentPage";
 import HomeItalian from "./pages/HomeItalian";
 import ItalianLoginPage from "./pages/ItalianLoginPage";
 import ItalianSoftwareSolutions from "./pages/ItalianSoftwareSolutions";
+import SEOAuditOptimizationPage from "./pages/SEOAuditOptimizationPage";
 import ServicesCatalogPage from "./pages/ServicesCatalogPage";
 import StripePayment from "./pages/StripePayment";
 import WebsiteDesignDevelopmentPage from "./pages/WebsiteDesignDevelopmentPage";
@@ -91,6 +93,26 @@ function AppRoutes({ lang, setLang }) {
           }
         />
         <Route
+          path="/seo-audit-optimization"
+          element={
+            lang === "it" ? (
+              <Navigate to="/it/seo-audit-optimization" replace />
+            ) : (
+              <SEOAuditOptimizationPage locale="en" />
+            )
+          }
+        />
+        <Route
+          path="/domain-hosting-deployment-setup"
+          element={
+            lang === "it" ? (
+              <Navigate to="/it/domain-hosting-deployment-setup" replace />
+            ) : (
+              <DomainHostingDeploymentPage locale="en" />
+            )
+          }
+        />
+        <Route
           path="/login"
           element={lang === "it" ? <Navigate to="/it/login" replace /> : <ItalianLoginPage locale="en" />}
         />
@@ -138,6 +160,26 @@ function AppRoutes({ lang, setLang }) {
               <Navigate to="/website-design-development" replace />
             ) : (
               <WebsiteDesignDevelopmentPage locale="it" />
+            )
+          }
+        />
+        <Route
+          path="/it/seo-audit-optimization"
+          element={
+            lang === "en" ? (
+              <Navigate to="/seo-audit-optimization" replace />
+            ) : (
+              <SEOAuditOptimizationPage locale="it" />
+            )
+          }
+        />
+        <Route
+          path="/it/domain-hosting-deployment-setup"
+          element={
+            lang === "en" ? (
+              <Navigate to="/domain-hosting-deployment-setup" replace />
+            ) : (
+              <DomainHostingDeploymentPage locale="it" />
             )
           }
         />
