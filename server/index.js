@@ -7,10 +7,12 @@ const axios = require('axios')
 const cors = require('cors')
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
+const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('./models/User')
 const QuoteRequest = require('./models/QuoteRequest')
+const ContactSalesRequest = require('./models/ContactSalesRequest')
 
 const app = express()
 const SERVICE_PRICING_INR = Object.freeze({
@@ -60,6 +62,7 @@ const normalizeContactPhone = (value) =>
     .slice(0, 40)
 const normalizeContactCompany = (value) => String(value || '').trim().slice(0, 120)
 const normalizeContactMessage = (value) => String(value || '').trim().slice(0, 1200)
+const normalizeContactAddress = (value) => String(value || '').trim().slice(0, 220)
 const normalizeLocale = (value) => (String(value || '').trim().toLowerCase() === 'it' ? 'it' : 'en')
 const normalizeServiceName = (value) => String(value || 'General Service').trim().slice(0, 60)
 const normalizeServiceKey = (value) => {
@@ -75,6 +78,15 @@ const normalizeServiceKey = (value) => {
 const isPositiveNumber = (value) => Number.isFinite(value) && value > 0
 const hasRazorpayCredentials = () => Boolean(RAZORPAY_KEY_ID && RAZORPAY_KEY_SECRET)
 const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || ''))
+const CONTACT_SALES_TO_EMAIL = normalizeEmail(process.env.CONTACT_SALES_TO_EMAIL || 'asiduogroup@gmail.com')
+const CONTACT_SALES_FROM_EMAIL = normalizeEmail(process.env.CONTACT_SALES_FROM_EMAIL || process.env.CONTACT_SALES_GMAIL_USER || CONTACT_SALES_TO_EMAIL)
+const CONTACT_SALES_GMAIL_USER = normalizeEmail(process.env.CONTACT_SALES_GMAIL_USER)
+const CONTACT_SALES_GMAIL_APP_PASSWORD = String(process.env.CONTACT_SALES_GMAIL_APP_PASSWORD || '').trim()
+const CONTACT_SALES_SMTP_HOST = String(process.env.CONTACT_SALES_SMTP_HOST || '').trim()
+const CONTACT_SALES_SMTP_PORT = Number(process.env.CONTACT_SALES_SMTP_PORT || 587)
+const CONTACT_SALES_SMTP_SECURE = String(process.env.CONTACT_SALES_SMTP_SECURE || '').trim().toLowerCase() === 'true'
+const CONTACT_SALES_SMTP_USER = normalizeEmail(process.env.CONTACT_SALES_SMTP_USER)
+const CONTACT_SALES_SMTP_PASS = String(process.env.CONTACT_SALES_SMTP_PASS || '').trim()
 const formatRazorpayError = (error, fallbackMessage) => {
   const messageFromApi = error.response?.data?.error?.description
   return String(messageFromApi || fallbackMessage)
@@ -93,6 +105,47 @@ const isSameSignature = (expectedSignature, actualSignature) => {
   }
 
   return crypto.timingSafeEqual(expectedBuffer, actualBuffer)
+}
+
+const createContactSalesMailer = () => {
+  if (CONTACT_SALES_GMAIL_USER && CONTACT_SALES_GMAIL_APP_PASSWORD) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: CONTACT_SALES_GMAIL_USER,
+        pass: CONTACT_SALES_GMAIL_APP_PASSWORD,
+      },
+    })
+  }
+
+  if (CONTACT_SALES_SMTP_HOST && CONTACT_SALES_SMTP_USER && CONTACT_SALES_SMTP_PASS) {
+    return nodemailer.createTransport({
+      host: CONTACT_SALES_SMTP_HOST,
+      port: Number.isFinite(CONTACT_SALES_SMTP_PORT) ? CONTACT_SALES_SMTP_PORT : 587,
+      secure: CONTACT_SALES_SMTP_SECURE,
+      auth: {
+        user: CONTACT_SALES_SMTP_USER,
+        pass: CONTACT_SALES_SMTP_PASS,
+      },
+    })
+  }
+
+  return null
+}
+
+const contactSalesMailer = createContactSalesMailer()
+
+if (contactSalesMailer) {
+  contactSalesMailer
+    .verify()
+    .then(() => {
+      console.log('Contact sales mailer is configured.')
+    })
+    .catch((error) => {
+      console.error('Contact sales mailer verification failed:', error.message)
+    })
+} else {
+  console.warn('Contact sales mailer is not configured. Set CONTACT_SALES_GMAIL_* or CONTACT_SALES_SMTP_* variables.')
 }
 
 const corsOptions = {
@@ -245,6 +298,9 @@ app.post('/api/quotations', async (req, res) => {
     const serviceName = normalizeServiceName(req.body?.serviceName)
     const serviceCategory = String(req.body?.serviceCategory || '').trim().slice(0, 40)
     const estimatedQuote = String(req.body?.estimatedQuote || '').trim().slice(0, 80)
+    const selectedOptions = String(req.body?.selectedOptions || '').trim().slice(0, 400)
+    const totalPrice = String(req.body?.totalPrice || '').trim().slice(0, 40)
+    const deliveryTime = String(req.body?.deliveryTime || '').trim().slice(0, 40)
     const name = normalizeContactName(req.body?.name)
     const phone = normalizeContactPhone(req.body?.phone)
     const email = normalizeEmail(req.body?.email)
@@ -265,6 +321,9 @@ app.post('/api/quotations', async (req, res) => {
       serviceName,
       serviceCategory,
       estimatedQuote,
+      selectedOptions,
+      totalPrice,
+      deliveryTime,
       name,
       phone,
       email,
@@ -282,6 +341,83 @@ app.post('/api/quotations', async (req, res) => {
   } catch (error) {
     console.error('Quotation request failed:', error)
     res.status(500).json({ error: 'Unable to submit quotation request right now.' })
+  }
+})
+
+app.post('/api/contact-sales', async (req, res) => {
+  try {
+    const targetEmail = CONTACT_SALES_TO_EMAIL
+    const name = normalizeContactName(req.body?.name)
+    const email = normalizeEmail(req.body?.email)
+    const phone = normalizeContactPhone(req.body?.phone)
+    const address = normalizeContactAddress(req.body?.address)
+    const purpose = normalizeContactMessage(req.body?.purpose)
+    const locale = normalizeLocale(req.body?.locale)
+
+    if (!name || !email || !phone || !address || !purpose) {
+      return res.status(400).json({ error: 'Name, email, phone, address, and purpose are required.' })
+    }
+
+    if (!isValidEmail(email) || !isValidEmail(targetEmail)) {
+      return res.status(400).json({ error: 'Invalid email address.' })
+    }
+
+    if (!contactSalesMailer) {
+      return res.status(500).json({
+        code: 'CONTACT_SALES_EMAIL_NOT_CONFIGURED',
+        error:
+          'Contact sales email is not configured on server. Add CONTACT_SALES_GMAIL_USER and CONTACT_SALES_GMAIL_APP_PASSWORD (or SMTP settings).',
+      })
+    }
+
+    const contactSalesRequest = new ContactSalesRequest({
+      targetEmail,
+      name,
+      email,
+      phone,
+      address,
+      purpose,
+      locale,
+    })
+
+    await contactSalesRequest.save()
+
+    const emailSubject = `Contact Sales Request - ${name}`
+    const emailText = [
+      'Contact Sales Request',
+      '',
+      `Name: ${name}`,
+      `Email: ${email}`,
+      `Contact Number: ${phone}`,
+      `Address: ${address}`,
+      `Purpose of Contact: ${purpose}`,
+      `Locale: ${locale}`,
+      `Request ID: ${contactSalesRequest._id}`,
+    ].join('\n')
+
+    try {
+      await contactSalesMailer.sendMail({
+        from: CONTACT_SALES_FROM_EMAIL || targetEmail,
+        to: targetEmail,
+        replyTo: email,
+        subject: emailSubject,
+        text: emailText,
+      })
+    } catch (emailError) {
+      console.error('Contact sales email delivery failed:', emailError)
+      return res.status(502).json({
+        code: 'CONTACT_SALES_EMAIL_DELIVERY_FAILED',
+        error: 'Email delivery failed. Please check mail configuration and try again.',
+      })
+    }
+
+    res.status(201).json({
+      message: 'Details sent to team. Reach you soon.',
+      requestId: contactSalesRequest._id,
+    })
+  } catch (error) {
+    console.error('Contact sales request failed:', error)
+    res.status(500).json({ error: 'Unable to send contact details right now.' })
   }
 })
 

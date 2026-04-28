@@ -9,6 +9,7 @@ import ItalianLoginPage from "./pages/ItalianLoginPage";
 import ItalianSoftwareSolutions from "./pages/ItalianSoftwareSolutions";
 import ServicesCatalogPage from "./pages/ServicesCatalogPage";
 import StripePayment from "./pages/StripePayment";
+import WebsiteDesignDevelopmentPage from "./pages/WebsiteDesignDevelopmentPage";
 
 const normalizeLanguagePath = (pathname, targetLanguage) => {
   if (targetLanguage === "en") {
@@ -80,6 +81,16 @@ function AppRoutes({ lang, setLang }) {
           }
         />
         <Route
+          path="/website-design-development"
+          element={
+            lang === "it" ? (
+              <Navigate to="/it/website-design-development" replace />
+            ) : (
+              <WebsiteDesignDevelopmentPage locale="en" />
+            )
+          }
+        />
+        <Route
           path="/login"
           element={lang === "it" ? <Navigate to="/it/login" replace /> : <ItalianLoginPage locale="en" />}
         />
@@ -118,6 +129,16 @@ function AppRoutes({ lang, setLang }) {
           path="/it/software-solutions"
           element={
             lang === "en" ? <Navigate to="/software-solutions" replace /> : <ItalianSoftwareSolutions locale="it" />
+          }
+        />
+        <Route
+          path="/it/website-design-development"
+          element={
+            lang === "en" ? (
+              <Navigate to="/website-design-development" replace />
+            ) : (
+              <WebsiteDesignDevelopmentPage locale="it" />
+            )
           }
         />
         <Route

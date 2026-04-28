@@ -26,6 +26,24 @@ const quoteRequestSchema = new mongoose.Schema(
       maxlength: 80,
       default: '',
     },
+    selectedOptions: {
+      type: String,
+      trim: true,
+      maxlength: 400,
+      default: '',
+    },
+    totalPrice: {
+      type: String,
+      trim: true,
+      maxlength: 40,
+      default: '',
+    },
+    deliveryTime: {
+      type: String,
+      trim: true,
+      maxlength: 40,
+      default: '',
+    },
     name: {
       type: String,
       trim: true,
